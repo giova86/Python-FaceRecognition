@@ -40,8 +40,20 @@ python app.py
 ```
 
 - Optional arguments
+```
+usage: app.py [-h] [-c CAMERA] [-k KNOWN] [-r SCALEDOWN]
 
-...
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CAMERA, --camera_id CAMERA
+                        ID of the camera. An integer between 0 and N. Default
+                        is 1
+  -k KNOWN, --known KNOWN
+                        folder with the known people images
+  -r SCALEDOWN, --scale SCALEDOWN
+                        scaling factor: 0.25 means 25 percent of the original
+                        size.
+
 
 ## Bibliography
 
