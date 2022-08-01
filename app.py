@@ -20,7 +20,7 @@ args = parser.parse_args()
 # -------------------------------------------------- #
 
 # - LAYOUT PARAMETERS ------------------------------ #
-thickness = 6
+thickness = 4
 color = (255,255,255)
 # -------------------------------------------------- #
 
@@ -74,14 +74,17 @@ while cap.isOpened():
     for face_coordinates, name in zip(face_locations, face_names):
         yi, xf, yf, xi = face_coordinates[0], face_coordinates[1], face_coordinates[2], face_coordinates[3]
 
-        if name != 'Unknown':
-            avatar = cv2.imread(f'./known_avatar/{name}.jpg')
-            avatar = cv2.resize(avatar, (0, 0), fx=args.scaleDown, fy=args.scaleDown)
-            avatar_shape = avatar.shape
-            frame[yi:(yi+avatar_shape[0]), xf:(xf + avatar_shape[1])] = avatar
-
         width = int((yf - yi)/5)
         height = int((xf - xi)/5)
+
+        if name != 'Unknown':
+            avatar = cv2.imread(f'./known_avatar/{name}.jpg')
+            avatar = cv2.resize(avatar, (int(100*avatar.shape[1]/avatar.shape[0]),100) )
+            #avatar = cv2.resize(avatar, (0, 0), fx=args.scaleDown, fy=args.scaleDown)
+            avatar_shape = avatar.shape
+            frame[(yi-30-100):(yi-30-100+avatar_shape[0]), (xf+30):(xf+30 + avatar_shape[1])] = avatar
+            cv2.line(frame, (xf,yi),(xf+30,yi-30), color, thickness)
+            cv2.rectangle(frame, (xf+30,yi-30),(xf+30+avatar_shape[1],yi-30-avatar_shape[0]), color, thickness)
 
         cv2.putText(frame, name, (xi, yi-20), cv2.FONT_HERSHEY_DUPLEX,1, (0,200,0), 2)
 
