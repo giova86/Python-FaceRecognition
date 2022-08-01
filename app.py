@@ -24,7 +24,7 @@ thickness = 6
 color = (255,255,255)
 # -------------------------------------------------- #
 
-# load known known people
+# load known people
 list_people_path = [join(args.known, f) for f in listdir("known_people/") if isfile(join(args.known, f))]
 list_people_name = [f.split(".")[0] for f in listdir("known_people/") if isfile(join(args.known, f))]
 print(f'{len(list_people_path)} known people in your database found.')
