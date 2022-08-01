@@ -53,7 +53,7 @@ optional arguments:
   -r SCALEDOWN, --scale SCALEDOWN
                         scaling factor: 0.25 means 25 percent of the original
                         size.
-
+```
 
 ## Bibliography
 
