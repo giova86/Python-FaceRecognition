@@ -2,6 +2,19 @@
 
 Build your personal face detection and face recognition algorithm. 
 
+<br>
+<p align="center">
+  <img width="640"  src="./images/test_01.png">
+</p>  
+<br>
+<br>
+<p align="center">
+  <img width="400"  src="./images/test_02.png">
+  <img width="400"  src="./images/test_03.png">
+  <img width="400"  src="./images/test_04.png">
+</p>  
+<br>
+
 ## Python Version
 
 This code i tested to work with Pytohn 3.9.
