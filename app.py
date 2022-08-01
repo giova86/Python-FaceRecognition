@@ -14,7 +14,7 @@ parser.add_argument("-c", "--camera_id", dest="camera", default=1, type=int,
 parser.add_argument("-k", "--known", dest="known", default="known_people", type=str,
                     help="folder with the known people")
 parser.add_argument("-r", "--scale", dest="scaleDown", default=0.25, type=float,
-                    help="scaling factor: 0.25 means 25% of the original size.")
+                    help="scaling factor: 0.25 means 25 percent of the original size.")
 
 args = parser.parse_args()
 # -------------------------------------------------- #
