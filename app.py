@@ -162,7 +162,7 @@ while cap.isOpened():
                     avatar_xi = xi - distance - avatar_w_dimension
                     avatar_xf = xi - distance - avatar_w_dimension + avatar_width
 
-                    line_xi = xi,
+                    line_xi = xi
                     line_xf = xi - distance
                     line_yi = yf
                     line_yf = yf + distance
