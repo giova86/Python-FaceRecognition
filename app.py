@@ -116,7 +116,7 @@ while cap.isOpened():
                 top = can_be_top(yi, avatar_length, distance, tolerance)
                 bottom = can_be_bottom(yf, frame_length, avatar_length, distance, tolerance)
 
-                draw_avatar = False
+                # draw_avatar = False
                 if top:
                     if right:
                         avatar_yi = yi - distance - avatar_w_dimension
