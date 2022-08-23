@@ -25,7 +25,7 @@ color = (255, 255, 255)
 avatar_w_dimension = 100
 tolerance = 5
 distance = 30
-
+frame_border = 0.2 # from 0 to 1 (from 0% to 100%)
 
 # -------------------------------------------------- #
 
@@ -65,10 +65,10 @@ for face_file_name in list_people_path:
         print(f'Updating {face_file_name}...')
         face_det = fr.face_locations(person_rgb)[0]
         person_rgb = cv2.cvtColor(person_rgb, cv2.COLOR_RGB2BGR)
-        border_w = int((face_det[2]-face_det[0])*0.2)
-        border_h = int((face_det[1]-face_det[3])*0.2)
-        io = person_rgb[max(face_det[0]-border_w, 0):face_det[2]+border_w,
-                        max(face_det[3]-border_h, 0):face_det[1]+border_h
+        border_w = int((face_det[2]-face_det[0])*frame_border)
+        border_h = int((face_det[1]-face_det[3])*frame_border)
+        io = person_rgb[max(face_det[0]-border_w, 0):min(face_det[2]+border_w, person_rgb.shape[1]),
+                        max(face_det[3]-border_h, 0):min(face_det[1]+border_h, person_rgb.shape[0])
                         ]
         cv2.imwrite(f'./known_avatar/{face_file_name}', io)
 print('Done')
