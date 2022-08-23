@@ -62,9 +62,14 @@ for face_file_name in list_people_path:
     if os.path.isfile(f'./known_avatar/{face_file_name}'):
         pass
     else:
+        print(f'Updating {face_file_name}...')
         face_det = fr.face_locations(person_rgb)[0]
         person_rgb = cv2.cvtColor(person_rgb, cv2.COLOR_RGB2BGR)
-        io = person_rgb[face_det[0]:face_det[2], face_det[3]:face_det[1]]
+        border_w = int((face_det[2]-face_det[0])*0.2)
+        border_h = int((face_det[1]-face_det[3])*0.2)
+        io = person_rgb[max(face_det[0]-border_w, 0):face_det[2]+border_w,
+                        max(face_det[3]-border_h, 0):face_det[1]+border_h
+                        ]
         cv2.imwrite(f'./known_avatar/{face_file_name}', io)
 print('Done')
 
