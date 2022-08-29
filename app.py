@@ -70,10 +70,10 @@ if len(difference_ka) > 0:
         person_rgb = cv2.cvtColor(person, cv2.COLOR_BGR2RGB)
         face_det = fr.face_locations(person_rgb)[0]
         person_rgb = cv2.cvtColor(person_rgb, cv2.COLOR_RGB2BGR)
-        border_w = int((face_det[2]-face_det[0])*frame_border)
-        border_h = int((face_det[1]-face_det[3])*frame_border)
-        io = person_rgb[max(face_det[0]-border_w, 0):min(face_det[2]+border_w, person_rgb.shape[1]),
-                        max(face_det[3]-border_h, 0):min(face_det[1]+border_h, person_rgb.shape[0])
+        border_w = int((face_det[1]-face_det[3])*frame_border)
+        border_h = int((face_det[2]-face_det[0])*frame_border)
+        io = person_rgb[max(face_det[0]-border_h, 0):min(face_det[2]+border_h, person_rgb.shape[0]),
+                        max(face_det[3]-border_w, 0):min(face_det[1]+border_w, person_rgb.shape[1])
                         ]
         cv2.imwrite(f'./known_avatar/{face_file_name}', io)
     print('DONE')
