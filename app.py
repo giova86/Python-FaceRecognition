@@ -5,6 +5,7 @@ import os
 import cv2
 import numpy as np
 from argparse import ArgumentParser
+import csv
 
 # - INPUT PARAMETERS ------------------------------- #
 parser = ArgumentParser()
@@ -13,15 +14,15 @@ parser.add_argument("-c", "--camera_id", dest="camera", default=0, type=int,
                     help="ID of the camera. An integer between 0 and N. Default is 1")
 parser.add_argument("-k", "--known", dest="known", default="known_people", type=str,
                     help="folder with the known people")
-parser.add_argument("-r", "--scale", dest="scaleDown", default=0.25, type=float,
+parser.add_argument("-r", "--rescale", dest="scaleDown", default=0.25, type=float,
                     help="scaling factor: 0.25 means 25 percent of the original size.")
 
 args = parser.parse_args()
 # -------------------------------------------------- #
 
 # - LAYOUT PARAMETERS ------------------------------ #
-thickness = 1
-color = (255, 255, 255)
+thickness = 2
+color = (0, 0, 0)
 avatar_w_dimension = 100
 tolerance = 5
 distance = 30
@@ -47,22 +48,26 @@ def can_be_bottom(yf, frame_length, avatar_length, distance, tolerance):
 
 # load known people
 list_people_path = [f for f in listdir("known_people/") if isfile(join(args.known, f))]
+list_avatar_path = [f for f in listdir("known_avatar/") if isfile(join("known_avatar", f))]
 list_people_name = [f.split(".")[0] for f in listdir("known_people/") if isfile(join(args.known, f))]
+list_avatar_name = [f.split(".")[0] for f in listdir("known_avatar/") if isfile(join("known_avatar", f))]
 print(f'{len(list_people_path)} known people in your database found.')
 
-# extract feature from know people
-list_people_encoded = []
-print('Checking Database...')
-for face_file_name in list_people_path:
-    absolute_path = os.path.join(os.getcwd(), args.known, face_file_name)
-    person = cv2.imread(absolute_path)
-    person_rgb = cv2.cvtColor(person, cv2.COLOR_BGR2RGB)
-    list_people_encoded.append(fr.face_encodings(person_rgb)[0])
 
-    if os.path.isfile(f'./known_avatar/{face_file_name}'):
-        pass
-    else:
-        print(f'Updating {face_file_name}...')
+difference_ka = list(set(list_people_path) - set(list_avatar_path))
+difference_ak = list(set(list_avatar_path) - set(list_people_path))
+
+if len(difference_ak) > 0:
+    # remove old avatar
+    pass
+
+if len(difference_ka) > 0:
+    print("\n-- Updating Database")
+    print("\n1. Updating Avatar...")
+    for face_file_name in difference_ka:
+        absolute_path = os.path.join(os.getcwd(), args.known, face_file_name)
+        person = cv2.imread(absolute_path)
+        person_rgb = cv2.cvtColor(person, cv2.COLOR_BGR2RGB)
         face_det = fr.face_locations(person_rgb)[0]
         person_rgb = cv2.cvtColor(person_rgb, cv2.COLOR_RGB2BGR)
         border_w = int((face_det[2]-face_det[0])*frame_border)
@@ -71,7 +76,40 @@ for face_file_name in list_people_path:
                         max(face_det[3]-border_h, 0):min(face_det[1]+border_h, person_rgb.shape[0])
                         ]
         cv2.imwrite(f'./known_avatar/{face_file_name}', io)
-print('Done')
+    print('DONE')
+
+    print("\n2. Updating Model...")
+    # extract feature from know people
+    list_people_encoded = []
+    for face_file_name in list_people_path:
+        absolute_path = os.path.join(os.getcwd(), args.known, face_file_name)
+        person = cv2.imread(absolute_path)
+        person_rgb = cv2.cvtColor(person, cv2.COLOR_BGR2RGB)
+        list_people_encoded.append(fr.face_encodings(person_rgb)[0])
+    print('DONE')
+
+    print("\n3. Saving New Model...")
+    with open("model.csv", "w") as f:
+        wr = csv.writer(f)
+        wr.writerows(list_people_encoded)
+    print('DONE')
+
+else:
+    print("\n-- Loading Model")
+    list_people_encoded = []
+
+    with open('model.csv', 'r') as read_obj:
+        # Return a reader object which will
+        # iterate over lines in the given csvfile
+        csv_reader = csv.reader(read_obj)
+        # convert string to list
+        list_people_encoded = list(csv_reader)
+
+    # float convertion
+    list_people_encoded = [list(map(float, sublist)) for sublist in list_people_encoded]
+
+    print('DONE')
+
 
 cap = cv2.VideoCapture(args.camera)
 while cap.isOpened():
@@ -189,7 +227,7 @@ while cap.isOpened():
                 cv2.rectangle(frame, (avatar_xi, avatar_yi), (avatar_xf, avatar_yf), color,
                               thickness)
 
-            cv2.putText(frame, name, (avatar_xf+10, avatar_yi + 20), cv2.FONT_HERSHEY_DUPLEX, 0.65, (0, 230, 0), 1)
+            cv2.putText(frame, name, (avatar_xf+10, avatar_yi + 20), cv2.FONT_HERSHEY_DUPLEX, 0.65, (0, 0, 0), 2)
 
             cv2.line(frame, (xi, yi), (xi + width, yi), color, thickness)
             cv2.line(frame, (xi, yi), (xi, yi + height), color, thickness)
