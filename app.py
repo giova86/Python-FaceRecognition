@@ -16,6 +16,8 @@ parser.add_argument("-k", "--known", dest="known", default="known_people", type=
                     help="folder with the known people")
 parser.add_argument("-r", "--rescale", dest="scaleDown", default=0.25, type=float,
                     help="scaling factor: 0.25 means 25 percent of the original size.")
+parser.add_argument("-a", "--avatar_dimension", dest="avatarDim", default=100, type=int,
+                    help="scaling factor: 0.25 means 25 percent of the original size.")
 
 args = parser.parse_args()
 # -------------------------------------------------- #
@@ -23,7 +25,7 @@ args = parser.parse_args()
 # - LAYOUT PARAMETERS ------------------------------ #
 thickness = 2
 color = (0, 0, 0)
-avatar_w_dimension = 100
+avatar_w_dimension = args.avatarDim
 tolerance = 5
 distance = 30
 frame_border = 0.2 # from 0 to 1 (from 0% to 100%)
@@ -227,7 +229,8 @@ while cap.isOpened():
                 cv2.rectangle(frame, (avatar_xi, avatar_yi), (avatar_xf, avatar_yf), color,
                               thickness)
 
-            cv2.putText(frame, name, (avatar_xf+10, avatar_yi + 20), cv2.FONT_HERSHEY_DUPLEX, 0.65, (0, 0, 0), 2)
+            cv2.putText(frame, name, (avatar_xf+10, avatar_yi + 20), cv2.FONT_HERSHEY_DUPLEX, 0.85, (0, 0, 0), 2)
+            cv2.putText(frame, 'Birth Date: unknown', (avatar_xf+10, avatar_yi + 45), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
 
             cv2.line(frame, (xi, yi), (xi + width, yi), color, thickness)
             cv2.line(frame, (xi, yi), (xi, yi + height), color, thickness)
