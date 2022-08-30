@@ -49,7 +49,7 @@ def can_be_bottom(yf, frame_length, avatar_length, distance, tolerance):
 
 
 current_directory = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
-print(current_directory    )
+
 # load known people
 list_people_path = [f for f in listdir(current_directory + "/known_people/") if isfile(join(current_directory + '/' + args.known, f))]
 print(list_people_path)
