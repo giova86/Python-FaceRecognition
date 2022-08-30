@@ -231,6 +231,8 @@ while cap.isOpened():
 
             cv2.putText(frame, name, (avatar_xf+10, avatar_yi + 20), cv2.FONT_HERSHEY_DUPLEX, 0.85, (0, 0, 0), 2)
             cv2.putText(frame, 'Birth Date: unknown', (avatar_xf+10, avatar_yi + 45), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
+            cv2.putText(frame, 'Facebook: unknown', (avatar_xf+10, avatar_yi + 65), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
+            cv2.putText(frame, 'Instagram: unknown', (avatar_xf+10, avatar_yi + 85), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
 
             cv2.line(frame, (xi, yi), (xi + width, yi), color, thickness)
             cv2.line(frame, (xi, yi), (xi, yi + height), color, thickness)
