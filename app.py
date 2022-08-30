@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 from argparse import ArgumentParser
 import csv
+import pandas as pd
 
 # - INPUT PARAMETERS ------------------------------- #
 parser = ArgumentParser()
@@ -50,13 +51,14 @@ def can_be_bottom(yf, frame_length, avatar_length, distance, tolerance):
 
 current_directory = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
 
+info_social = pd.read_csv(current_directory + '/' + 'info.csv')
+
 # load known people
 list_people_path = [f for f in listdir(current_directory + "/known_people/") if isfile(join(current_directory + '/' + args.known, f))]
-print(list_people_path)
 list_avatar_path = [f for f in listdir(current_directory + "/known_avatar/") if isfile(join(current_directory + "/known_avatar", f))]
 list_people_name = [f.split(".")[0] for f in listdir(current_directory + "/known_people/") if isfile(join(current_directory + '/' + args.known, f))]
 list_avatar_name = [f.split(".")[0] for f in listdir(current_directory + "/known_avatar/") if isfile(join(current_directory + "/known_avatar", f))]
-print(f'{len(list_people_path)} known people in your database found.')
+print(f'\n{len(list_people_path)} known people in your database found.')
 
 
 difference_ka = list(set(list_people_path) - set(list_avatar_path))
@@ -233,9 +235,9 @@ while cap.isOpened():
                               thickness)
 
             cv2.putText(frame, name, (avatar_xf+10, avatar_yi + 20), cv2.FONT_HERSHEY_DUPLEX, 0.85, (0, 0, 0), 2)
-            cv2.putText(frame, 'Birth Date: unknown', (avatar_xf+10, avatar_yi + 45), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
-            cv2.putText(frame, 'Facebook: unknown', (avatar_xf+10, avatar_yi + 65), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
-            cv2.putText(frame, 'Instagram: unknown', (avatar_xf+10, avatar_yi + 85), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
+            cv2.putText(frame, f'Birth Date: {info_social[info_social["name"]==name].birthday.values[0]}', (avatar_xf+10, avatar_yi + 45), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
+            cv2.putText(frame, f'Facebook: {info_social[info_social["name"]==name].fb.values[0]}', (avatar_xf+10, avatar_yi + 65), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
+            cv2.putText(frame, f'Instagram: {info_social[info_social["name"]==name].ig.values[0]}', (avatar_xf+10, avatar_yi + 85), cv2.FONT_HERSHEY_DUPLEX, 0.55, (0, 0, 0), 1)
 
             cv2.line(frame, (xi, yi), (xi + width, yi), color, thickness)
             cv2.line(frame, (xi, yi), (xi, yi + height), color, thickness)
