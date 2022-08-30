@@ -48,11 +48,14 @@ def can_be_bottom(yf, frame_length, avatar_length, distance, tolerance):
     return yf + distance + avatar_length + tolerance < frame_length
 
 
+current_directory = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
+print(current_directory    )
 # load known people
-list_people_path = [f for f in listdir("known_people/") if isfile(join(args.known, f))]
-list_avatar_path = [f for f in listdir("known_avatar/") if isfile(join("known_avatar", f))]
-list_people_name = [f.split(".")[0] for f in listdir("known_people/") if isfile(join(args.known, f))]
-list_avatar_name = [f.split(".")[0] for f in listdir("known_avatar/") if isfile(join("known_avatar", f))]
+list_people_path = [f for f in listdir(current_directory + "/known_people/") if isfile(join(current_directory + '/' + args.known, f))]
+print(list_people_path)
+list_avatar_path = [f for f in listdir(current_directory + "/known_avatar/") if isfile(join(current_directory + "/known_avatar", f))]
+list_people_name = [f.split(".")[0] for f in listdir(current_directory + "/known_people/") if isfile(join(current_directory + '/' + args.known, f))]
+list_avatar_name = [f.split(".")[0] for f in listdir(current_directory + "/known_avatar/") if isfile(join(current_directory + "/known_avatar", f))]
 print(f'{len(list_people_path)} known people in your database found.')
 
 
@@ -100,7 +103,7 @@ else:
     print("\n-- Loading Model")
     list_people_encoded = []
 
-    with open('model.csv', 'r') as read_obj:
+    with open(current_directory + '/model.csv', 'r') as read_obj:
         # Return a reader object which will
         # iterate over lines in the given csvfile
         csv_reader = csv.reader(read_obj)
@@ -147,7 +150,7 @@ while cap.isOpened():
             height = int((xf - xi) / 5)
 
             # if name != 'Unknown2':
-            avatar = cv2.imread(f'./known_avatar/{name}.jpg')
+            avatar = cv2.imread(f'{current_directory}/known_avatar/{name}.jpg')
             avatar = cv2.resize(avatar,
                                 (int(avatar_w_dimension * avatar.shape[1] / avatar.shape[0]), avatar_w_dimension))
 
