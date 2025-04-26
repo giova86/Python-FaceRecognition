@@ -9,6 +9,7 @@ import csv
 import pandas as pd
 import re
 import hashlib
+import time
 
 # - INPUT PARAMETERS ------------------------------- #
 parser = ArgumentParser()
@@ -73,22 +74,35 @@ def calculate_files_hash(directory):
         hash_obj.update(file_info.encode())
     return hash_obj.hexdigest()
 
-print('\n-- Checking files and model')
+
+
+def pprint(text, char_delay=0.003, line_delay=0.003):
+    lines = text.split('\n')
+    for line in lines:
+        for char in line:
+            print(char, end='', flush=True)
+            time.sleep(char_delay)
+        print()  # Vai a capo dopo ogni riga
+        time.sleep(line_delay)  # Pausa dopo ogni riga
+
+
+
+pprint('\n-- Checking files and model')
 current_directory = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
-print(f'\n [x] Current directory: {current_directory}')
+pprint(f'\n [x] Current directory: {current_directory}')
 
 # Check if the model needs to be updated by calculating a hash of the current files
 known_dir = current_directory + "/" + args.known
-print(f' [x] Known directory: {known_dir}')
+pprint(f' [x] Known directory: {known_dir}')
 last_hash_file = current_directory + "/last_hash.txt"
 current_hash = calculate_files_hash(known_dir)
-print(f' [x] Current hash: {current_hash}')
+pprint(f' [x] Current hash: {current_hash}')
 last_hash = ""
 
 if os.path.exists(last_hash_file):
     with open(last_hash_file, 'r') as file:
         last_hash = file.read().strip()
-        print(f' [x] Last hash: {last_hash}')
+        pprint(f' [x] Last hash: {last_hash}')
 
 model_needs_update = (current_hash != last_hash) or args.force_update
 
@@ -96,7 +110,7 @@ model_needs_update = (current_hash != last_hash) or args.force_update
 info_social = pd.read_csv(current_directory + '/' + 'info.csv')
 
 
-print('\n-- Checking Database')
+pprint('\n-- Checking Database')
 
 # load known people
 list_people_path = [f for f in listdir(known_dir) if isfile(join(known_dir, f))]
@@ -117,7 +131,7 @@ for person in person_to_images:
 # Get list of unique people
 list_unique_people = list(person_to_images.keys())
 
-print(f'\n [x] {len(list_people_path)} photos of {len(list_unique_people)} known people in the database found.')
+pprint(f'\n [x] {len(list_people_path)} photos of {len(list_unique_people)} known people in the database found.')
 
 # Check for new people that need avatars (people who don't have an avatar yet)
 new_people = []
@@ -127,14 +141,14 @@ for person in list_unique_people:
         new_people.append(person)
 
 if len(new_people) > 0:
-    print(f' [x] {len(new_people)} found')
+    pprint(f' [x] {len(new_people)} found')
 
 if len(new_people) > 0 or model_needs_update:
-    print("\n-- Updating Database & Model")
+    pprint("\n-- Updating Database & Model")
 
     # Create avatars for new people
     if len(new_people) > 0:
-        print("\n [-] Creating New Avatars...")
+        pprint("\n [-] Creating New Avatars...")
         for person in new_people:
             # Use the first image of this person to create the avatar
             face_file_name = person_to_images[person][0]  # First image for this person
@@ -154,14 +168,14 @@ if len(new_people) > 0 or model_needs_update:
                                 max(face_det[3]-border_w, 0):min(face_det[1]+border_w, person_rgb.shape[1])
                                ]
                 cv2.imwrite(f'./known_avatar/{avatar_output_name}', io)
-                print(f"      -> Created avatar for {person}")
+                pprint(f"      -> Created avatar for {person}")
             else:
-                print(f"Warning: No face detected in {face_file_name}, avatar not created for {person}")
+                pprint(f"Warning: No face detected in {face_file_name}, avatar not created for {person}")
 
     else:
-        print("\n [-] No New Avatars")
+        pprint("\n [-] No New Avatars")
 
-    print("\n [-] Updating Model...")
+    pprint("\n [-] Updating Model...")
     # extract feature from known people (all images)
     list_people_encoded = []
     list_people_names = []
@@ -177,12 +191,12 @@ if len(new_people) > 0 or model_needs_update:
             if len(faces) > 0:
                 list_people_encoded.append(faces[0])
                 list_people_names.append(person)  # Store the base name, not the filename
-                #print(f"Added encoding for {face_file_name}")
+                #pprint(f"Added encoding for {face_file_name}")
             else:
-                print(f" Warning: No face encoding could be generated for {face_file_name}")
+                pprint(f" Warning: No face encoding could be generated for {face_file_name}")
 
 
-    print("\n [-] Saving New Model...")
+    pprint("\n [-] Saving New Model...")
     # Save model and names
     with open("model.csv", "w", newline='') as f:
         wr = csv.writer(f)
@@ -198,11 +212,11 @@ if len(new_people) > 0 or model_needs_update:
 
 
 else:
-    print("\n-- Loading Existing Model")
+    pprint("\n-- Loading Existing Model")
     list_people_encoded = []
     list_people_names = []
 
-    print(f'\n [x] Loading model.csv')
+    pprint(f'\n [x] Loading model.csv')
 
     with open(current_directory + '/model.csv', 'r') as read_obj:
         csv_reader = csv.reader(read_obj)
@@ -213,7 +227,7 @@ else:
 
     # Load names
     try:
-        print(f' [x] Loading names.csv')
+        pprint(f' [x] Loading names.csv')
 
         with open(current_directory + '/names.csv', 'r') as read_obj:
             csv_reader = csv.reader(read_obj)
@@ -221,9 +235,9 @@ else:
     except FileNotFoundError:
         # For backward compatibility with older versions
         list_people_names = [get_base_name(f) for f in list_people_path]
-        print("Warning: names.csv not found, using filenames as person identifiers")
+        pprint("Warning: names.csv not found, using filenames as person identifiers")
 
-print("\n-- Starting recognition")
+pprint("\n-- Starting recognition")
 
 
 cap = cv2.VideoCapture(args.camera)
@@ -317,7 +331,7 @@ while cap.isOpened():
 
                             draw_avatar = True
                         else:
-                            print('to be implemented')
+                            pprint('to be implemented')
                             # put in the top middle
                     elif bottom:
                         if right:
@@ -345,10 +359,10 @@ while cap.isOpened():
 
                             draw_avatar = True
                         else:
-                            print('to be implemented')
+                            pprint('to be implemented')
                             # put in the bottom middle
                     else:
-                        print('nothing to do at the moment!')
+                        pprint('nothing to do at the moment!')
 
                     if draw_avatar:
                         frame[avatar_yi:avatar_yf, avatar_xi:avatar_xf] = avatar
@@ -366,7 +380,7 @@ while cap.isOpened():
                         else:
                             cv2.putText(frame, name, (avatar_xf+10, avatar_yi + 20), cv2.FONT_HERSHEY_DUPLEX, 0.85, (0, 0, 0), 2)
                 else:
-                    print(f"Avatar not found for {name}")
+                    pprint(f"Avatar not found for {name}")
 
             cv2.line(frame, (xi, yi), (xi + width, yi), color, thickness)
             cv2.line(frame, (xi, yi), (xi, yi + height), color, thickness)
